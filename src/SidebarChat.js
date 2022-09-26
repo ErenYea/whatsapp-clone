@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import "./SidebarChat.css";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import db from "./firebase";
+import { Link } from "react-router-dom";
 const SidebarChat = ({ id, name, selected, addNewChat }) => {
   const [seed, setSeed] = useState("");
   useEffect(() => {
@@ -20,13 +21,15 @@ const SidebarChat = ({ id, name, selected, addNewChat }) => {
   };
 
   return !addNewChat ? (
-    <div className={selected ? "sidebarChat selected" : "sidebarChat"}>
-      <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
-      <div className="sidebarChat__info">
-        <h2>{name}</h2>
-        <p>THis is the last message</p>
+    <Link to={`/rooms/${id}`}>
+      <div className={selected ? "sidebarChat selected" : "sidebarChat"}>
+        <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
+        <div className="sidebarChat__info">
+          <h2>{name}</h2>
+          <p>THis is the last message</p>
+        </div>
       </div>
-    </div>
+    </Link>
   ) : (
     <div onClick={createChat} className="sidebarChat add__chat">
       <AddCircleOutlineIcon />
