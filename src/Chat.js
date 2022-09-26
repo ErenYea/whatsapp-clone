@@ -10,18 +10,30 @@ import MicIcon from "@mui/icons-material/Mic";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import { useParams } from "react-router-dom";
 import db from "./firebase";
+import firebase from "firebase/compat/app";
+import { useStateValue } from "./StateProvider";
 
-const Chat = ({ messages }) => {
+const Chat = ({}) => {
   const [seed, setSeed] = useState("");
   const [input, setInput] = useState("");
   const { roomId } = useParams();
   const [roomName, setRoomName] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [state, dispatch] = useStateValue();
 
   useEffect(() => {
     if (roomId) {
       db.collection("rooms")
         .doc(roomId)
         .onSnapshot((snapshot) => setRoomName(snapshot.data().name));
+
+      db.collection("rooms")
+        .doc(roomId)
+        .collection("messages")
+        .orderBy("timestamp", "asc")
+        .onSnapshot((snapshot) =>
+          setMessages(snapshot.docs.map((doc) => doc.data()))
+        );
     }
   }, [roomId]);
   useEffect(() => {
@@ -31,6 +43,12 @@ const Chat = ({ messages }) => {
   const sendMessage = (e) => {
     e.preventDefault();
     console.log("your tped >> ", input);
+
+    db.collection("rooms").doc(roomId).collection("messages").add({
+      message: input,
+      name: state.user.displayName,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
 
     setInput("");
   };
@@ -55,20 +73,22 @@ const Chat = ({ messages }) => {
         </div>
       </div>
       <div className="chat__body">
-        {/* {messages.map((message) => {
+        {messages.map((message) => {
           return (
             <p
               className={`chat__message ${
-                message.received && "chat__reciever"
+                message.name === state.user.displayName && "chat__reciever"
               }`}
             >
               <span className="chat__name">{message.name}</span>
               {message.message}
-              <span className="chat__timestamp">{message.timestamp}</span>
+              <span className="chat__timestamp">
+                {new Date(message.timestamp?.toDate()).toUTCString()}
+              </span>
             </p>
           );
-        })} */}
-        <p className="chat__message chat__reciever">
+        })}
+        {/* <p className="chat__message chat__reciever">
           <span className="chat__name">Hamza</span>
           This is the message
           <span className="chat__timestamp">{new Date().toUTCString()}</span>
@@ -77,7 +97,7 @@ const Chat = ({ messages }) => {
           <span className="chat__name">Hamza</span>
           This is the message
           <span className="chat__timestamp">{new Date().toUTCString()}</span>
-        </p>
+        </p> */}
       </div>
       <div className="chat__footer">
         <IconButton>

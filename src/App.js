@@ -5,12 +5,14 @@ import Sidebar from "./Sidebar";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { useState } from "react";
 import Login from "./Login";
+import { useStateValue } from "./StateProvider";
 // import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 function App() {
-  const [user, setUser] = useState(null);
+  const [state, dispatch] = useStateValue();
+  // const [user, setUser] = useState(null);
   return (
     <div className="app">
-      {!user ? (
+      {!state.user ? (
         <Login />
       ) : (
         <div className="app__body">
@@ -19,7 +21,7 @@ function App() {
             <Routes>
               <Route path="/rooms/:roomId" element={<Chat />} />
 
-              <Route path="/" />
+              <Route path="/" element={<Chat />} />
             </Routes>
           </Router>
         </div>

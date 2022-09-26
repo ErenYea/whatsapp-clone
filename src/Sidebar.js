@@ -9,8 +9,10 @@ import { OutlinedInput } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import SidebarChat from "./SidebarChat";
 import db from "./firebase";
+import { useStateValue } from "./StateProvider";
 
 const Sidebar = () => {
+  const [state, dispatch] = useStateValue();
   const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
@@ -29,7 +31,7 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <div className="sidebar__header">
-        <Avatar src="https://lh3.googleusercontent.com/a-/ACNPEu_rxhOI3A9fkSq3BbNtgvoJN_4p4m9lZM4jnsXeew=s288-p-no" />
+        <Avatar src={state.user?.photoURL} />
         <div className="sidebar__headerRight">
           <IconButton>
             <DonutLargeIcon />
